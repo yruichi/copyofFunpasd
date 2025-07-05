@@ -7,8 +7,8 @@ from PIL import Image, ImageTk
 from tkcalendar import DateEntry
 from datetime import datetime
 import sqlite3
-#import matplotlib.pyplot as plt
-#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import random
 import string

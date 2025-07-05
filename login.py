@@ -9,7 +9,6 @@ from for_employees import EmployeeDashboard  # Import Employee dashboard
 # Keep references to images to prevent garbage collection
 image_refs = []
 
-# Helper function to center the window on the screen
 def center_window(root, width=800, height=600):
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
@@ -17,12 +16,11 @@ def center_window(root, width=800, height=600):
     y = (screen_height - height) // 2
     root.geometry(f"{width}x{height}+{x}+{y}")
 
-# Helper to get the best resample filter for Pillow image resizing
 def get_resample_filter():
     # Use LANCZOS if available, else NEAREST (always exists)
     return getattr(getattr(Image, "Resampling", Image), "LANCZOS", getattr(getattr(Image, "Resampling", Image), "NEAREST", 0))
 
-# Draw a rounded rectangle on a Tkinter Canvas
+# Draw a rounded rectangle on a canvas
 def draw_rounded_rect(canvas, x1, y1, x2, y2, r, **kwargs):
     points = [
         x1+r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y2-r, x2, y2,
@@ -30,7 +28,7 @@ def draw_rounded_rect(canvas, x1, y1, x2, y2, r, **kwargs):
     ]
     return canvas.create_polygon(points, smooth=True, **kwargs)
 
-# Create a rounded Entry widget (for username/password)
+# Create a rounded Entry widget 
 def create_rounded_entry(parent, width=200, height=32, radius=16, bg='#e3eaff', entry_bg='#e3eaff', font=('Arial', 10), show=None):
     if not isinstance(font, tuple):
         font = ('Arial', 10)
@@ -77,14 +75,17 @@ def create_rounded_button(parent, text, command, width=200, height=40, radius=15
 def show_login():
     root = tk.Tk()  # Create main window
     root.title("FunPass - Login")
-    center_window(root, 800, 600)  # Center the window
+    # Set the window to full screen using geometry
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    root.geometry(f"{screen_width}x{screen_height}+0+0")
     resample_filter = get_resample_filter()  # Get best image resample filter
 
     # Try to set a background image
     try:
         image_path = "bg_carousel.jpeg"
         bg_image = Image.open(image_path)
-        bg_image_resized = bg_image.resize((1370, 720), resample_filter)
+        bg_image_resized = bg_image.resize((screen_width, screen_height), resample_filter)
         bg_photo = ImageTk.PhotoImage(bg_image_resized)
         bg_label = tk.Label(root, image=bg_photo)
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
@@ -117,7 +118,6 @@ def show_login():
         # Fallback: show text if logo image fails
         tk.Label(main_frame, text="FunPass", font=('Arial', 24, 'bold'), bg='white', fg='#4CAF50').pack(pady=20)
 
-    # Subtitle under the logo
     tk.Label(main_frame, text="For Faculty Members Only", font=('Arial', 10, 'bold'), bg='white', fg='#666666').pack(pady=(0, 20))
 
     # Login form frame
@@ -156,7 +156,7 @@ def show_login():
             return
         conn = sqlite3.connect('funpass.db')
         cursor = conn.cursor()
-        # Check admin credentials
+        # 1. Check admin credentials
         cursor.execute('SELECT * FROM admin WHERE username = ? AND password = ?', (username, password))
         admin = cursor.fetchone()
         if admin:
@@ -166,7 +166,7 @@ def show_login():
             admin_root.mainloop()
             conn.close()
             return
-        # Check employee credentials
+        # 2. Check employee credentials
         cursor.execute('SELECT employee_id FROM employees WHERE username = ? AND password = ?', (username, password))
         emp = cursor.fetchone()
         if emp:
@@ -187,6 +187,6 @@ def show_login():
     root.bind('<Return>', on_enter_key)
     root.mainloop()
 
-# Run the login window if this file is executed directly
-if __name__ == "__main__":
+
+if __name__ == "__main__": # Entry point
     show_login()

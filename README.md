@@ -1,1 +1,2 @@
-# copyofFunpasd
+# FunPass
+IPT &amp; IM Project
